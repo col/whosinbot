@@ -12,9 +12,21 @@
   revision = "6e2e37798efbb1dfd8e9c6681702e683a6046517"
   version = "v1.0.1"
 
+[[projects]]
+  name = "github.com/technoweenie/multipartstreamer"
+  packages = ["."]
+  revision = "a90a01d73ae432e2611d178c18367fbaa13e0154"
+  version = "v1.0.1"
+
+[[projects]]
+  name = "gopkg.in/telegram-bot-api.v4"
+  packages = ["."]
+  revision = "2022d04b94f50056a09962b1ac81cdd821d20a55"
+  version = "v4.6.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3375957ebac467c0b60004a3901209363670a2ee730d5474c3d1ad1b121325bd"
+  inputs-digest = "2ebd20b3330051135a1c825e0e016528cbafebe379e01a58e1d42e174831e085"
   solver-name = "gps-cdcl"
   solver-version = 1
