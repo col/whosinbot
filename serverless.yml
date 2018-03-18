@@ -51,11 +51,16 @@ package:
 functions:
   telegram:
     handler: bin/telegram
+    environment:
+      TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
     events:
       - http:
-          path: telegram
+          path: telegram/{token}
           method: post
-          cors: true
+          request:
+            parameters:
+              paths:
+                token: true
 
 #    Define function environment variables here
 #    environment:

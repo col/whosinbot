@@ -4,6 +4,7 @@
 [[projects]]
   name = "github.com/aws/aws-lambda-go"
   packages = [
+    "events",
     "lambda",
     "lambda/messages",
     "lambdacontext"
@@ -14,6 +15,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "85fa166cc59d0fa113a1517ffbb5dee0f1fa4a6795239936afb18c64364af759"
+  inputs-digest = "3375957ebac467c0b60004a3901209363670a2ee730d5474c3d1ad1b121325bd"
   solver-name = "gps-cdcl"
   solver-version = 1
