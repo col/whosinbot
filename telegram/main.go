@@ -14,7 +14,7 @@ import (
 func ValidateToken(requestToken string) (string, error) {
 	token := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if token != requestToken {
-		message := fmt.Sprintf("Bot token doesn't match! Expected: %v Received: %v", token, requestToken)
+		message := fmt.Sprintf("ERROR: Bot token doesn't match! Expected: %v Received: %v", token, requestToken)
 		return "", errors.New(message)
 	}
 	return token, nil
