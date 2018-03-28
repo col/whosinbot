@@ -6,3 +6,4 @@ bin
 
 # golang vendor (dependencies) directory
 vendor
+.env
