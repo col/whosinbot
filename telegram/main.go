@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"gopkg.in/telegram-bot-api.v4"
 	"encoding/json"
+	"github.com/col/whosinbot/core"
 )
 
 func ValidateToken(requestToken string) (string, error) {
@@ -27,7 +28,8 @@ func ParseRequest(requestBody string) (*tgbotapi.Update, error) {
 }
 
 func HandleUpdate(update *tgbotapi.Update, bot *tgbotapi.BotAPI) {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	response, _ := core.HandleMessage(update.Message)
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 
