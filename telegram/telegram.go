@@ -17,7 +17,7 @@ func NewTelegram(token string) (*Telegram) {
 }
 
 func (t *Telegram) SendResponse(response *domain.Response) (error) {
-	if response == nil {
+	if response == nil || len(response.Text) == 0 {
 		return nil
 	}
 
