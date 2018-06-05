@@ -16,7 +16,7 @@ curl -XPOST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getWebhookInfo
 
 Install AWS CLI tools
 
-```
+```  
 brew install awscli
 aws configure --profile col.w.harris
 ```
@@ -40,7 +40,7 @@ make build
 ```
 serverless deploy
 ```
-
+    
 ## Links
 
 - https://github.com/go-telegram-bot-api/telegram-bot-api

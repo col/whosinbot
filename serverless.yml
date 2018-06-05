@@ -48,7 +48,7 @@ package:
 
 functions:
   telegram:
-    handler: bin/telegram
+    handler: bin/telegram_lambda
     environment:
       TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
     events:
