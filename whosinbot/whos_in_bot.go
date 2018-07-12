@@ -28,7 +28,9 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 	case "whos_in":
 		return b.handleWhosIn(command)
 	case "shh":
-		return b.handleShh(command)
+		return b.handleSetQuiet(command, true)
+	case "louder":
+		return b.handleSetQuiet(command, false)
 	default:
 		return nil, errors.New("Not a bot command")
 	}
@@ -61,7 +63,7 @@ func (b *WhosInBot) handleEnd(command domain.Command) (*domain.Response, error) 
 	return &domain.Response{ChatID: command.ChatID, Text: "Roll call ended"}, nil
 }
 
-func (b *WhosInBot) handleShh(command domain.Command) (*domain.Response, error) {
+func (b *WhosInBot) handleSetQuiet(command domain.Command, quiet bool) (*domain.Response, error) {
 	rollCall, err := b.DataStore.GetRollCall(command.ChatID)
 	if err != nil {
 		return nil, err
@@ -69,11 +71,15 @@ func (b *WhosInBot) handleShh(command domain.Command) (*domain.Response, error) 
 	if rollCall == nil {
 		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
 	}
-	err = b.DataStore.SetQuiet(*rollCall, true)
+	err = b.DataStore.SetQuiet(*rollCall, quiet)
 	if err != nil {
 		return nil, err
 	}
-	return &domain.Response{ChatID: command.ChatID, Text: "Ok fine, I'll be quiet. 🤐"}, nil
+	if quiet {
+		return &domain.Response{ChatID: command.ChatID, Text: "Ok fine, I'll be quiet. 🤐"}, nil
+	} else {
+		return &domain.Response{ChatID: command.ChatID, Text: "Sure. 😃\n"+responsesList(rollCall)}, nil
+	}
 }
 
 func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, error) {

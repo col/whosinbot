@@ -201,9 +201,33 @@ func TestShh(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Ok fine, I'll be quiet. 🤐", nil)
 }
 
-func TestShhWithNRollCallInProgress(t *testing.T) {
+func TestShhWithNoRollCallInProgress(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(command("shh", nil))
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
+func TestLouder(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{
+		ChatID: 123,
+		In: []domain.RollCallResponse{
+			{ChatID: 123, UserID: 1, Name: "User 1", Response: "in", Reason: ""},
+		},
+	}
+
+	response, err := bot.HandleCommand(command("louder", nil))
+	// Validate data store
+	assert.True(t, mockDataStore.setQuietCalled)
+	assert.NotNil(t, mockDataStore.setQuietWithRollCall)
+	assert.False(t, mockDataStore.setQuietWithBool)
+	// Validate Response
+	assertBotResponse(t, response, err, 123, "Sure. 😃\n1. User 1", nil)
+}
+
+func TestLouderWithNoRollCallInProgress(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(command("louder", nil))
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 
