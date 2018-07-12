@@ -27,6 +27,8 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 		return b.handleResponse(command, "maybe")
 	case "whos_in":
 		return b.handleWhosIn(command)
+	case "shh":
+		return b.handleShh(command)
 	default:
 		return nil, errors.New("Not a bot command")
 	}
@@ -57,6 +59,21 @@ func (b *WhosInBot) handleEnd(command domain.Command) (*domain.Response, error) 
 		return nil, err
 	}
 	return &domain.Response{ChatID: command.ChatID, Text: "Roll call ended"}, nil
+}
+
+func (b *WhosInBot) handleShh(command domain.Command) (*domain.Response, error) {
+	rollCall, err := b.DataStore.GetRollCall(command.ChatID)
+	if err != nil {
+		return nil, err
+	}
+	if rollCall == nil {
+		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
+	}
+	err = b.DataStore.SetQuiet(*rollCall, true)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.Response{ChatID: command.ChatID, Text: "Ok fine, I'll be quiet. 🤐"}, nil
 }
 
 func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, error) {

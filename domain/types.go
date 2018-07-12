@@ -36,6 +36,8 @@ type DataStore interface {
 	StartRollCall(rollCall RollCall) error
 	EndRollCall(rollCall RollCall) error
 
+	SetQuiet(rollCall RollCall, quiet bool) error
+
 	SetResponse(rollCallResponse RollCallResponse) error
 
 	GetRollCall(chatID int64) (*RollCall, error)
@@ -44,6 +46,7 @@ type DataStore interface {
 type RollCall struct {
 	ChatID int64
 	Title  string
+	Quiet  bool
 	In     []RollCallResponse
 	Out    []RollCallResponse
 	Maybe  []RollCallResponse

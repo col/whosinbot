@@ -13,6 +13,10 @@ type MockDataStore struct {
 	endRollCallCalled bool
 	endRollCallWith   *domain.RollCall
 
+	setQuietCalled       bool
+	setQuietWithRollCall *domain.RollCall
+	setQuietWithBool     bool
+
 	setResponseCalled bool
 	setResponseWith   *domain.RollCallResponse
 
@@ -29,6 +33,13 @@ func (d *MockDataStore) StartRollCall(rollCall domain.RollCall) error {
 func (d *MockDataStore) EndRollCall(rollCall domain.RollCall) error {
 	d.endRollCallCalled = true
 	d.endRollCallWith = &rollCall
+	return nil
+}
+
+func (d *MockDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
+	d.setQuietCalled = true
+	d.setQuietWithRollCall = &rollCall
+	d.setQuietWithBool = quiet
 	return nil
 }
 
@@ -173,7 +184,39 @@ func TestWhosIn(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Test Title\n1. User 1\n\nOut\n - User 2\n\nMaybe\n - User 3", nil)
 }
 
+func TestShh(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{
+		ChatID: 123,
+		Title:  "Test Title",
+		Quiet:  false,
+	}
+
+	response, err := bot.HandleCommand(command("shh", nil))
+	// Validate data store
+	assert.True(t, mockDataStore.setQuietCalled)
+	assert.NotNil(t, mockDataStore.setQuietWithRollCall)
+	assert.True(t, mockDataStore.setQuietWithBool)
+	// Validate Response
+	assertBotResponse(t, response, err, 123, "Ok fine, I'll be quiet. 🤐", nil)
+}
+
+func TestShhWithNRollCallInProgress(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(command("shh", nil))
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
 // Test Helpers
+func command(name string, params []string) domain.Command {
+	return domain.Command{
+		ChatID: 123,
+		Name:   name,
+		Params: params,
+		From:   domain.User{UserID: 456, Username: "JohnSmith"},
+	}
+}
+
 func responseCommand(status string) domain.Command {
 	return domain.Command{
 		ChatID: 123,

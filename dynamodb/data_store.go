@@ -29,6 +29,11 @@ func (d DynamoDataStore) EndRollCall(rollCall domain.RollCall) error {
 	return nil
 }
 
+func (d DynamoDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
+	// TODO: ...
+	return nil
+}
+
 func (d DynamoDataStore) StartRollCall(rollCall domain.RollCall) (error) {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("ap-southeast-1")},
