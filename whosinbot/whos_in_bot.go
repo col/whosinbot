@@ -13,7 +13,9 @@ type WhosInBot struct {
 }
 
 func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, error) {
-	log.Printf("Command: %v", command.Name)
+	// DEBUG
+	log.Printf("Command: %+v\n", command)
+
 	switch command.Name {
 	case "start_roll_call":
 		return b.handleStart(command)
@@ -106,10 +108,20 @@ func (b *WhosInBot) handleResponse(command domain.Command, status string) (*doma
 		ChatID:   command.ChatID,
 		UserID:   command.From.UserID,
 		Name:     command.From.Username,
-		Response: status,
+		Status:   status,
 		Reason:   command.ParamsString(),
 	}
 	b.DataStore.SetResponse(rollCallResponse)
+
+	// TODO: refactor, move to rollCall method
+	switch rollCallResponse.Status {
+	case "in":
+		rollCall.In = append(rollCall.In, rollCallResponse)
+	case "out":
+		rollCall.Out = append(rollCall.Out, rollCallResponse)
+	case "maybe":
+		rollCall.Maybe = append(rollCall.Maybe, rollCallResponse)
+	}
 
 	return &domain.Response{ChatID: command.ChatID, Text: responsesList(rollCall)}, nil
 }
@@ -119,6 +131,9 @@ func (b *WhosInBot) handleOut(command domain.Command) (*domain.Response, error) 
 }
 
 func responsesList(rollCall *domain.RollCall) (string) {
+	// DEBUG
+	log.Printf("Response for roll call: %+v\n", rollCall)
+
 	var text = ""
 
 	if len(rollCall.Title) > 0 {

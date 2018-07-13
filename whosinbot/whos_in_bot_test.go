@@ -46,14 +46,6 @@ func (d *MockDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
 func (d *MockDataStore) SetResponse(rollCallResponse domain.RollCallResponse) error {
 	d.setResponseCalled = true
 	d.setResponseWith = &rollCallResponse
-	switch rollCallResponse.Response {
-	case "in":
-		d.rollCall.In = append(d.rollCall.In, rollCallResponse)
-	case "out":
-		d.rollCall.Out = append(d.rollCall.Out, rollCallResponse)
-	case "maybe":
-		d.rollCall.Maybe = append(d.rollCall.Maybe, rollCallResponse)
-	}
 	return nil
 }
 
@@ -131,7 +123,7 @@ func TestInWhenRollCallIsInProgress(t *testing.T) {
 
 	response, err := bot.HandleCommand(responseCommand("in"))
 
-	assertResponsePersisted(t, 123, "in", "JohnSmith")
+	assertResponsePersisted(t, 123, 456, "in", "JohnSmith")
 	assertBotResponse(t, response, err, 123, "1. JohnSmith (sample reason)", nil)
 }
 
@@ -146,7 +138,7 @@ func TestOutWhenRollCallIsInProgress(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
 	response, err := bot.HandleCommand(responseCommand("out"))
-	assertResponsePersisted(t, 123, "out", "JohnSmith")
+	assertResponsePersisted(t, 123, 456, "out", "JohnSmith")
 	assertBotResponse(t, response, err, 123, "Out\n - JohnSmith (sample reason)", nil)
 }
 
@@ -161,7 +153,7 @@ func TestMaybeWhenRollCallIsInProgress(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
 	response, err := bot.HandleCommand(responseCommand("maybe"))
-	assertResponsePersisted(t, 123, "maybe", "JohnSmith")
+	assertResponsePersisted(t, 123, 456, "maybe", "JohnSmith")
 	assertBotResponse(t, response, err, 123, "Maybe\n - JohnSmith (sample reason)", nil)
 }
 
@@ -171,13 +163,13 @@ func TestWhosIn(t *testing.T) {
 		ChatID: 123,
 		Title:  "Test Title",
 		In: []domain.RollCallResponse{
-			{ChatID: 123, UserID: 1, Name: "User 1", Response: "in", Reason: ""},
+			{ChatID: 123, UserID: 1, Name: "User 1", Status: "in", Reason: ""},
 		},
 		Out: []domain.RollCallResponse{
-			{ChatID: 123, UserID: 1, Name: "User 2", Response: "out", Reason: ""},
+			{ChatID: 123, UserID: 1, Name: "User 2", Status: "out", Reason: ""},
 		},
 		Maybe: []domain.RollCallResponse{
-			{ChatID: 123, UserID: 1, Name: "User 3", Response: "maybe", Reason: ""},
+			{ChatID: 123, UserID: 1, Name: "User 3", Status: "maybe", Reason: ""},
 		},
 	}
 	response, err := bot.HandleCommand(responseCommand("whos_in"))
@@ -212,7 +204,7 @@ func TestLouder(t *testing.T) {
 	mockDataStore.rollCall = &domain.RollCall{
 		ChatID: 123,
 		In: []domain.RollCallResponse{
-			{ChatID: 123, UserID: 1, Name: "User 1", Response: "in", Reason: ""},
+			{ChatID: 123, UserID: 1, Name: "User 1", Status: "in", Reason: ""},
 		},
 	}
 
@@ -250,12 +242,13 @@ func responseCommand(status string) domain.Command {
 	}
 }
 
-func assertResponsePersisted(t *testing.T, chatID int, status string, name string) {
+func assertResponsePersisted(t *testing.T, chatID int, userID int, status string, name string) {
 	assert.True(t, mockDataStore.setResponseCalled, "should call setResponse")
 	assert.NotNil(t, mockDataStore.setResponseWith)
 	if mockDataStore.setResponseWith != nil {
 		assert.Equal(t, int64(chatID), mockDataStore.setResponseWith.ChatID)
-		assert.Equal(t, status, mockDataStore.setResponseWith.Response)
+		assert.Equal(t, int64(userID), mockDataStore.setResponseWith.UserID)
+		assert.Equal(t, status, mockDataStore.setResponseWith.Status)
 		assert.Equal(t, name, mockDataStore.setResponseWith.Name)
 	}
 }

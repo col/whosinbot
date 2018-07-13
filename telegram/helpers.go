@@ -13,10 +13,15 @@ func ParseUpdate(requestBody []byte) (domain.Command, error) {
 	if err != nil {
 		return domain.EmptyCommand(), err
 	}
+	// TODO: split this into a mapping function and write some tests around it
 	command := domain.Command{
 		ChatID: update.Message.Chat.ID,
 		Name:   update.Message.Command(),
 		Params: strings.Fields(update.Message.CommandArguments()),
+		From:   domain.User{
+			UserID: int64(update.Message.From.ID),
+			Username: update.Message.From.UserName,
+		},
 	}
 	return command, err
 }

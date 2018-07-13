@@ -56,6 +56,6 @@ type RollCallResponse struct {
 	ChatID   int64
 	UserID   int64
 	Name     string
-	Response string
+	Status   string
 	Reason   string
 }
