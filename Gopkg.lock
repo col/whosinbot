@@ -9,8 +9,8 @@
     "lambda/messages",
     "lambdacontext"
   ]
-  revision = "6e2e37798efbb1dfd8e9c6681702e683a6046517"
-  version = "v1.0.1"
+  revision = "4d30d0ff60440c2d0480a15747c96ee71c3c53d4"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
@@ -25,6 +25,7 @@
     "aws/credentials/ec2rolecreds",
     "aws/credentials/endpointcreds",
     "aws/credentials/stscreds",
+    "aws/csm",
     "aws/defaults",
     "aws/ec2metadata",
     "aws/endpoints",
@@ -33,6 +34,7 @@
     "aws/signer/v4",
     "internal/sdkio",
     "internal/sdkrand",
+    "internal/sdkuri",
     "internal/shareddefaults",
     "private/protocol",
     "private/protocol/json/jsonutil",
@@ -44,8 +46,8 @@
     "service/dynamodb",
     "service/sts"
   ]
-  revision = "4f810fa5d8869fcfca0a0a7f6a834ee9cfa22095"
-  version = "v1.13.40"
+  revision = "9e9afa0895e9daff556cc18f90dc53eb91f41ffd"
+  version = "v1.14.26"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -56,8 +58,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
-  version = "v1.36.0"
+  revision = "358ee7663966325963d4e8b2e1fbd570c5195153"
+  version = "v1.38.1"
 
 [[projects]]
   name = "github.com/jmespath/go-jmespath"
@@ -73,8 +75,8 @@
 [[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
-  version = "v1.2.1"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
 
 [[projects]]
   name = "github.com/technoweenie/multipartstreamer"
@@ -85,8 +87,8 @@
 [[projects]]
   name = "gopkg.in/telegram-bot-api.v4"
   packages = ["."]
-  revision = "2022d04b94f50056a09962b1ac81cdd821d20a55"
-  version = "v4.6.1"
+  revision = "0e0af0c480ea98e982d5f4d45fb39577c6ab1e3e"
+  version = "v4.6.2"
 
 [solve-meta]
   analyzer-name = "dep"
