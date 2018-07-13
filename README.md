@@ -39,7 +39,7 @@ make build
 
 ```
 source .env
-serverless deploy
+make deploy
 ```
     
 ## Links

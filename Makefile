@@ -8,3 +8,6 @@ build:
 
 test:
 	ENVIRONMENT=test go test $(UNIT_TEST_PACKAGES) -race
+
+deploy: build
+	serverless deploy
