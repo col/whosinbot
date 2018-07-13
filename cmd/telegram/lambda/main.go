@@ -7,6 +7,8 @@ import (
 	"context"
 	"github.com/col/whosinbot/telegram"
 	"github.com/col/whosinbot/whosinbot"
+	"log"
+	"strings"
 )
 
 func main() {
@@ -14,6 +16,16 @@ func main() {
 }
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	// DEBUG
+	log.Printf("Request Body: " + request.Body)
+
+	if strings.Contains(request.Body, "edited_message") {
+		// Avoid crash caused by the telegram lib not handling edited messages correctly yet.
+		// Just ignore this message.
+		log.Printf("Ignoring edited message. Not supported")
+		return events.APIGatewayProxyResponse{StatusCode: 200}, nil
+	}
 
 	// Parse Command
 	command, err := telegram.ParseUpdate([]byte(request.Body))
