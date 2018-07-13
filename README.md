@@ -38,6 +38,7 @@ make build
 ## Deploy
 
 ```
+source .env
 serverless deploy
 ```
     
