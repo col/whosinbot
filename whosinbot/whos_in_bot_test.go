@@ -103,7 +103,10 @@ func TestStartRollCall(t *testing.T) {
 	setUp()
 	command := domain.Command{ChatID: 123, Name: "start_roll_call", Params: []string{"sample title"}}
 	response, err := bot.HandleCommand(command)
-	// Validate data store
+	// Validate end previous roll call (if exists)
+	assert.True(t, mockDataStore.endRollCallCalled)
+	assert.Equal(t, int64(123), mockDataStore.endRollCallWith.ChatID)
+	// Validate start new roll call
 	assert.True(t, mockDataStore.startRollCallCalled)
 	assert.NotNil(t, mockDataStore.startRollCallWith)
 	assert.Equal(t, int64(123), mockDataStore.startRollCallWith.ChatID)

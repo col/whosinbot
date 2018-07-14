@@ -3,7 +3,6 @@ package whosinbot
 import (
 	"log"
 	"github.com/col/whosinbot/domain"
-	"strings"
 	"fmt"
 )
 
@@ -41,14 +40,17 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 }
 
 func (b *WhosInBot) handleStart(command domain.Command) (*domain.Response, error) {
-	roll_call := domain.RollCall{
+	rollCall := domain.RollCall{
 		ChatID: command.ChatID,
-		Title:  strings.Join(command.Params, " "),
+		Title:  command.ParamsString(),
 	}
-	err := b.DataStore.StartRollCall(roll_call)
+
+	_ = b.DataStore.EndRollCall(rollCall)
+	err := b.DataStore.StartRollCall(rollCall)
 	if err != nil {
 		return nil, err
 	}
+
 	return &domain.Response{ChatID: command.ChatID, Text: "Roll call started"}, nil
 }
 
@@ -138,10 +140,6 @@ func (b *WhosInBot) handleResponse(command domain.Command, status string) (*doma
 	}
 
 	return &domain.Response{ChatID: command.ChatID, Text: responsesList(rollCall)}, nil
-}
-
-func (b *WhosInBot) handleOut(command domain.Command) (*domain.Response, error) {
-	return &domain.Response{}, nil
 }
 
 func responsesList(rollCall *domain.RollCall) (string) {
