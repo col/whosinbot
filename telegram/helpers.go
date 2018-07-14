@@ -20,7 +20,7 @@ func ParseUpdate(requestBody []byte) (domain.Command, error) {
 		Params: strings.Fields(update.Message.CommandArguments()),
 		From:   domain.User{
 			UserID: int64(update.Message.From.ID),
-			Username: update.Message.From.UserName,
+			Name: update.Message.From.FirstName,
 		},
 	}
 	return command, err

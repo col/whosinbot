@@ -10,6 +10,8 @@ import (
 	"log"
 )
 
+const EmptyString = " "
+
 type DynamoDataStore struct {
 
 }
@@ -36,7 +38,74 @@ func (d DynamoDataStore) GetRollCall(chatID int64) (*domain.RollCall, error) {
 		Title: *result.Item["title"].S,
 		Quiet: *result.Item["quiet"].BOOL,
 	}
+
 	return &rollCall, nil
+}
+
+func (d DynamoDataStore) LoadRollCallResponses(rollCall *domain.RollCall) error {
+	responses, err := d.getRollCallResponses(rollCall.ChatID)
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	for _, response := range responses {
+		rollCall.AddResponse(response)
+	}
+
+	return nil
+}
+
+func (d DynamoDataStore) getRollCallResponses(chatID int64) ([]domain.RollCallResponse, error) {
+	svc := getService()
+
+	// DEBUG
+	log.Printf("getRollCallResponses ChatID: %+d\n", chatID)
+
+	keyConditionExpression := "chat_id = :chat_id"
+	selectString := dynamodb.SelectAllAttributes
+
+	input := &dynamodb.QueryInput{
+		Select: &selectString,
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":chat_id": {
+				N: aws.String(strconv.Itoa(int(chatID))),
+			},
+		},
+		KeyConditionExpression: &keyConditionExpression,
+		TableName: aws.String(os.Getenv("ROLLCALL_RESPONSE_TABLE")),
+	}
+
+	result, err := svc.Query(input)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+
+	var responses = []domain.RollCallResponse{}
+	for _, item := range result.Items {
+		userID, err := strconv.Atoi(*item["user_id"].N)
+		if err != nil {
+			log.Println(err.Error())
+			return nil, err
+		}
+
+		reason := *item["reason"].S
+		if reason == EmptyString {
+			reason = ""
+		}
+
+		response := domain.RollCallResponse{
+			ChatID: chatID,
+			UserID: int64(userID),
+			Name: *item["name"].S,
+			Status: *item["status"].S,
+			Reason: reason,
+		}
+		responses = append(responses, response)
+	}
+
+	return responses, nil
 }
 
 func (d DynamoDataStore) SetResponse(rollCallResponse domain.RollCallResponse) error {
@@ -46,26 +115,32 @@ func (d DynamoDataStore) SetResponse(rollCallResponse domain.RollCallResponse) e
 	log.Printf("SetResponse: %+v\n", rollCallResponse)
 
 	values := map[string]*dynamodb.AttributeValue{}
-	values[":username"] = &dynamodb.AttributeValue{
+	values[":name"] = &dynamodb.AttributeValue{
 		S: aws.String(rollCallResponse.Name),
 	}
 	values[":status"] = &dynamodb.AttributeValue{
 		S: aws.String(rollCallResponse.Status),
 	}
-	if len(rollCallResponse.Reason) > 0 {
-		values[":reason"] = &dynamodb.AttributeValue{
-			S: aws.String(rollCallResponse.Reason),
-		}
+	reason := rollCallResponse.Reason
+	if len(reason) == 0 {
+		reason = EmptyString
+	}
+	values[":reason"] = &dynamodb.AttributeValue{
+		S: aws.String(reason),
 	}
 
-	statusName := "status"
+	nameField := "name"
+	statusField := "status"
 	input := &dynamodb.UpdateItemInput{
-		ExpressionAttributeNames: map[string]*string{"#status": &statusName},
+		ExpressionAttributeNames: map[string]*string{
+			"#name": &nameField,
+			"#status": &statusField,
+		},
 		ExpressionAttributeValues: values,
 		TableName: aws.String(os.Getenv("ROLLCALL_RESPONSE_TABLE")),
 		Key: getResponseKey(rollCallResponse.ChatID, rollCallResponse.UserID),
 		ReturnValues:     aws.String("UPDATED_NEW"),
-		UpdateExpression: aws.String("set username = :username, #status = :status"),
+		UpdateExpression: aws.String("set #name = :name, #status = :status, reason = :reason"),
 	}
 
 	_, err := svc.UpdateItem(input)

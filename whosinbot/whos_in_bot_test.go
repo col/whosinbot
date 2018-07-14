@@ -20,6 +20,12 @@ type MockDataStore struct {
 	setResponseCalled bool
 	setResponseWith   *domain.RollCallResponse
 
+	getRollCallCalled bool
+	getRollCallWith   int64
+
+	loadRollCallResponsesCalled bool
+	loadRollCallResponsesWith   *domain.RollCall
+
 	rollCall          *domain.RollCall
 	rollCallResponses []domain.RollCallResponse
 }
@@ -46,15 +52,23 @@ func (d *MockDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
 func (d *MockDataStore) SetResponse(rollCallResponse domain.RollCallResponse) error {
 	d.setResponseCalled = true
 	d.setResponseWith = &rollCallResponse
+	d.rollCallResponses = append(d.rollCallResponses, rollCallResponse)
 	return nil
 }
 
 func (d *MockDataStore) GetRollCall(chatID int64) (*domain.RollCall, error) {
+	d.getRollCallCalled = true
+	d.getRollCallWith = chatID
 	return d.rollCall, nil
 }
 
-func (d *MockDataStore) GetRollCallResponses(chatID int64) ([]domain.RollCallResponse, error) {
-	return d.rollCallResponses, nil
+func (d *MockDataStore) LoadRollCallResponses(rollCall *domain.RollCall) error {
+	d.loadRollCallResponsesCalled = true
+	d.loadRollCallResponsesWith = rollCall
+	for _, response := range d.rollCallResponses {
+		rollCall.AddResponse(response)
+	}
+	return nil
 }
 
 var mockDataStore *MockDataStore
@@ -229,7 +243,7 @@ func command(name string, params []string) domain.Command {
 		ChatID: 123,
 		Name:   name,
 		Params: params,
-		From:   domain.User{UserID: 456, Username: "JohnSmith"},
+		From:   domain.User{UserID: 456, Name: "JohnSmith"},
 	}
 }
 
@@ -238,7 +252,7 @@ func responseCommand(status string) domain.Command {
 		ChatID: 123,
 		Name:   status,
 		Params: []string{"sample reason"},
-		From:   domain.User{UserID: 456, Username: "JohnSmith"},
+		From:   domain.User{UserID: 456, Name: "JohnSmith"},
 	}
 }
 

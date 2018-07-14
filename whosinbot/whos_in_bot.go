@@ -80,6 +80,10 @@ func (b *WhosInBot) handleSetQuiet(command domain.Command, quiet bool) (*domain.
 	if quiet {
 		return &domain.Response{ChatID: command.ChatID, Text: "Ok fine, I'll be quiet. 🤐"}, nil
 	} else {
+		err = b.DataStore.LoadRollCallResponses(rollCall)
+		if err != nil {
+			return nil, err
+		}
 		return &domain.Response{ChatID: command.ChatID, Text: "Sure. 😃\n"+responsesList(rollCall)}, nil
 	}
 }
@@ -91,6 +95,10 @@ func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, erro
 	}
 	if rollCall == nil {
 		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
+	}
+	err = b.DataStore.LoadRollCallResponses(rollCall)
+	if err != nil {
+		return nil, err
 	}
 	return &domain.Response{ChatID: command.ChatID, Text: responsesList(rollCall)}, nil
 }
@@ -104,23 +112,12 @@ func (b *WhosInBot) handleResponse(command domain.Command, status string) (*doma
 		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
 	}
 
-	rollCallResponse := domain.RollCallResponse{
-		ChatID:   command.ChatID,
-		UserID:   command.From.UserID,
-		Name:     command.From.Username,
-		Status:   status,
-		Reason:   command.ParamsString(),
-	}
+	rollCallResponse := domain.NewRollCallResponse(command, status)
 	b.DataStore.SetResponse(rollCallResponse)
 
-	// TODO: refactor, move to rollCall method
-	switch rollCallResponse.Status {
-	case "in":
-		rollCall.In = append(rollCall.In, rollCallResponse)
-	case "out":
-		rollCall.Out = append(rollCall.Out, rollCallResponse)
-	case "maybe":
-		rollCall.Maybe = append(rollCall.Maybe, rollCallResponse)
+	err = b.DataStore.LoadRollCallResponses(rollCall)
+	if err != nil {
+		return nil, err
 	}
 
 	return &domain.Response{ChatID: command.ChatID, Text: responsesList(rollCall)}, nil
