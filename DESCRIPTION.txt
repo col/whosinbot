@@ -1,0 +1,1 @@
+Help you track who will attend an event within a group chat.
