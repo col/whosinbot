@@ -42,11 +42,12 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 
 	// Send Response
-	api := telegram.NewTelegram(request.PathParameters["token"])
-	err = api.SendResponse(response)
-	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 400}, err
+	if response != nil {
+		api := telegram.NewTelegram(request.PathParameters["token"])
+		err = api.SendResponse(response)
+		if err != nil {
+			return events.APIGatewayProxyResponse{StatusCode: 400}, err
+		}
 	}
-
 	return events.APIGatewayProxyResponse{StatusCode: 200}, nil
 }

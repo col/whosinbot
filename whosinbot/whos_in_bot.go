@@ -2,7 +2,6 @@ package whosinbot
 
 import (
 	"log"
-	"errors"
 	"github.com/col/whosinbot/domain"
 	"strings"
 	"fmt"
@@ -36,7 +35,8 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 	case "louder":
 		return b.handleSetQuiet(command, false)
 	default:
-		return nil, errors.New("Not a bot command")
+		log.Printf("Not a bot command: %+v\n", command)
+		return nil, nil
 	}
 }
 
