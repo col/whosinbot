@@ -36,6 +36,7 @@ type DataStore interface {
 	StartRollCall(rollCall RollCall) error
 	EndRollCall(rollCall RollCall) error
 
+	SetTitle(rollCall RollCall, title string) error
 	SetQuiet(rollCall RollCall, quiet bool) error
 
 	SetResponse(rollCallResponse RollCallResponse) error

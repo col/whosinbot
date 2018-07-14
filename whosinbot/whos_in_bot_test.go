@@ -13,6 +13,10 @@ type MockDataStore struct {
 	endRollCallCalled bool
 	endRollCallWith   *domain.RollCall
 
+	setTitleCalled       bool
+	setTitleWithRollCall *domain.RollCall
+	setTitleWithTitle    string
+
 	setQuietCalled       bool
 	setQuietWithRollCall *domain.RollCall
 	setQuietWithBool     bool
@@ -39,6 +43,13 @@ func (d *MockDataStore) StartRollCall(rollCall domain.RollCall) error {
 func (d *MockDataStore) EndRollCall(rollCall domain.RollCall) error {
 	d.endRollCallCalled = true
 	d.endRollCallWith = &rollCall
+	return nil
+}
+
+func (d *MockDataStore) SetTitle(rollCall domain.RollCall, title string) error {
+	d.setTitleCalled = true
+	d.setTitleWithRollCall = &rollCall
+	d.setTitleWithTitle = title
 	return nil
 }
 
@@ -122,6 +133,25 @@ func TestEndRollCallWhenRollCallDoesNotExists(t *testing.T) {
 	// Validate data store
 	assert.False(t, mockDataStore.endRollCallCalled)
 	// Validate response
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
+func TestSetTitleWhenRollCallExists(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
+	response, err := bot.HandleCommand(command("set_title", []string{"foo", "bar"}))
+	// Validate data store
+	assert.True(t, mockDataStore.setTitleCalled, "should call setTitle")
+	assert.NotNil(t, mockDataStore.setTitleWithRollCall)
+	assert.Equal(t, int64(123), mockDataStore.setTitleWithRollCall.ChatID)
+	assert.Equal(t, "foo bar", mockDataStore.setTitleWithTitle)
+	// Validate response
+	assertBotResponse(t, response, err, 123, "Roll call title set", nil)
+}
+
+func TestSetTitleWithNoRollCallInProgress(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(command("set_title", nil))
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 

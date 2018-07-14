@@ -162,6 +162,33 @@ func (d DynamoDataStore) EndRollCall(rollCall domain.RollCall) error {
 	return nil
 }
 
+func (d DynamoDataStore) SetTitle(rollCall domain.RollCall, title string) error {
+	svc := getService()
+
+	// DEBUG
+	log.Printf("SetTitle: %+v\n", rollCall)
+
+	input := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":title": {
+				S: aws.String(title),
+			},
+		},
+		TableName: aws.String(os.Getenv("ROLLCALL_TABLE")),
+		Key: getKey(rollCall.ChatID),
+		ReturnValues:     aws.String("UPDATED_NEW"),
+		UpdateExpression: aws.String("set title = :title"),
+	}
+
+	_, err := svc.UpdateItem(input)
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func (d DynamoDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
 	svc := getService()
 

@@ -21,6 +21,8 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 		return b.handleStart(command)
 	case "end_roll_call":
 		return b.handleEnd(command)
+	case "set_title":
+		return b.handleSetTitle(command)
 	case "in":
 		return b.handleResponse(command, "in")
 	case "out":
@@ -63,6 +65,21 @@ func (b *WhosInBot) handleEnd(command domain.Command) (*domain.Response, error) 
 		return nil, err
 	}
 	return &domain.Response{ChatID: command.ChatID, Text: "Roll call ended"}, nil
+}
+
+func (b *WhosInBot) handleSetTitle(command domain.Command) (*domain.Response, error) {
+	rollCall, err := b.DataStore.GetRollCall(command.ChatID)
+	if err != nil {
+		return nil, err
+	}
+	if rollCall == nil {
+		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
+	}
+	err = b.DataStore.SetTitle(*rollCall, command.ParamsString())
+	if err != nil {
+		return nil, err
+	}
+	return &domain.Response{ChatID: command.ChatID, Text: "Roll call title set"}, nil
 }
 
 func (b *WhosInBot) handleSetQuiet(command domain.Command, quiet bool) (*domain.Response, error) {
