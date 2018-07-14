@@ -220,6 +220,13 @@ func TestWhosIn(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Test Title\n1. User 1\n\nOut\n - User 2\n\nMaybe\n - User 3", nil)
 }
 
+func TestWhosInWhenThereAreNoResponses(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ ChatID: 123, Title:  "Test Title" }
+	response, err := bot.HandleCommand(responseCommand("whos_in"))
+	assertBotResponse(t, response, err, 123, "No responses yet. 😢", nil)
+}
+
 func TestShh(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{

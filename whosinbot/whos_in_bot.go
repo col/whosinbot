@@ -148,6 +148,10 @@ func responsesList(rollCall *domain.RollCall) (string) {
 	// DEBUG
 	log.Printf("Response for roll call: %+v\n", rollCall)
 
+	if len(rollCall.In) == 0 && len(rollCall.Out) == 0 && len(rollCall.Maybe) == 0 {
+		return "No responses yet. 😢"
+	}
+
 	var text = ""
 
 	if len(rollCall.Title) > 0 {
