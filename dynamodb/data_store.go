@@ -37,7 +37,7 @@ func (d DynamoDataStore) StartRollCall(rollCall domain.RollCall) (error) {
 			},
 		},
 		TableName:        aws.String(os.Getenv("ROLLCALL_TABLE")),
-		Key:              getKey(rollCall.ChatID),
+		Key:              getRollCallKey(rollCall.ChatID),
 		ReturnValues:     aws.String("UPDATED_NEW"),
 		UpdateExpression: aws.String("set title = :title, quiet = :quiet"),
 	}
@@ -60,7 +60,7 @@ func (d DynamoDataStore) GetRollCall(chatID int64) (*domain.RollCall, error) {
 
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(os.Getenv("ROLLCALL_TABLE")),
-		Key: getKey(chatID),
+		Key: getRollCallKey(chatID),
 	}
 
 	result, err := svc.GetItem(input)
@@ -205,12 +205,36 @@ func (d DynamoDataStore) EndRollCall(rollCall domain.RollCall) error {
 	// DEBUG
 	log.Printf("EndRollCall: %+v\n", rollCall)
 
-	input := &dynamodb.DeleteItemInput{
-		Key: getKey(rollCall.ChatID),
-		TableName: aws.String(os.Getenv("ROLLCALL_TABLE")),
+	responses, err := d.getRollCallResponses(rollCall.ChatID)
+	if err != nil {
+		log.Println(err.Error())
+		return err
 	}
 
-	_, err := svc.DeleteItem(input)
+	deleteResponseRequests := []*dynamodb.WriteRequest{}
+	for _, response := range responses {
+		writeRequest := &dynamodb.WriteRequest{
+			DeleteRequest: &dynamodb.DeleteRequest{
+				Key: getResponseKey(rollCall.ChatID, response.UserID),
+			},
+		}
+		deleteResponseRequests = append(deleteResponseRequests, writeRequest)
+	}
+
+	input := &dynamodb.BatchWriteItemInput{
+		RequestItems: map[string][]*dynamodb.WriteRequest {
+			os.Getenv("ROLLCALL_TABLE"): {
+				&dynamodb.WriteRequest{
+					DeleteRequest: &dynamodb.DeleteRequest{
+						Key: getRollCallKey(rollCall.ChatID),
+					},
+				},
+			},
+			os.Getenv("ROLLCALL_RESPONSE_TABLE"): deleteResponseRequests,
+		},
+	}
+
+	_, err = svc.BatchWriteItem(input)
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -232,7 +256,7 @@ func (d DynamoDataStore) SetTitle(rollCall domain.RollCall, title string) error 
 			},
 		},
 		TableName: aws.String(os.Getenv("ROLLCALL_TABLE")),
-		Key: getKey(rollCall.ChatID),
+		Key: getRollCallKey(rollCall.ChatID),
 		ReturnValues:     aws.String("UPDATED_NEW"),
 		UpdateExpression: aws.String("set title = :title"),
 	}
@@ -259,7 +283,7 @@ func (d DynamoDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
 			},
 		},
 		TableName: aws.String(os.Getenv("ROLLCALL_TABLE")),
-		Key: getKey(rollCall.ChatID),
+		Key: getRollCallKey(rollCall.ChatID),
 		ReturnValues:     aws.String("UPDATED_NEW"),
 		UpdateExpression: aws.String("set quiet = :quiet"),
 	}
@@ -274,7 +298,7 @@ func (d DynamoDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
 	return nil
 }
 
-func getKey(chatID int64) map[string]*dynamodb.AttributeValue {
+func getRollCallKey(chatID int64) map[string]*dynamodb.AttributeValue {
 	return map[string]*dynamodb.AttributeValue{
 		"chat_id": {
 			N: aws.String(strconv.Itoa(int(chatID))),
