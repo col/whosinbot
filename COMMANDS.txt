@@ -4,3 +4,6 @@ in - Let everyone know you'll be attending (with optional comment)
 out - Let everyone know you won't be attending (with optional comment)
 maybe - Let everyone know that you don't know (with optional comment)
 whos_in - List attendees
+set_in_for - Respond for someone else (with optional comment)
+set_out_for - Respond for someone else (with optional comment)
+set_maybe_for - Respond for someone else (with optional comment)
