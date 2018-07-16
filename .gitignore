@@ -7,3 +7,4 @@ bin
 # golang vendor (dependencies) directory
 vendor
 .env
+node_modules
