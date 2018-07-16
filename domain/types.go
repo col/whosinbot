@@ -13,6 +13,17 @@ func (c Command) ParamsString() string {
 	return strings.Join(c.Params, " ")
 }
 
+func (c Command) FirstParam() string {
+	if len(c.Params) > 0 {
+		return c.Params[0]
+	}
+	return ""
+}
+
+func (c Command) ParamsStringExceptFirst() string {
+	return strings.Join(c.Params[1:], " ")
+}
+
 type User struct {
 	UserID   int64
 	Name string
@@ -73,12 +84,12 @@ type RollCallResponse struct {
 	Reason   string
 }
 
-func NewRollCallResponse(command Command, status string) RollCallResponse {
+func NewRollCallResponse(command Command, name string, status string, reason string) RollCallResponse {
 	return RollCallResponse{
 		ChatID: command.ChatID,
 		UserID: command.From.UserID,
-		Name: command.From.Name,
+		Name: name,
 		Status: status,
-		Reason: command.ParamsString(),
+		Reason: reason,
 	}
 }

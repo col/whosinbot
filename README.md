@@ -54,6 +54,6 @@ make deploy
 - [x] responses: in, out, maybe
 - [x] whos_in
 - [x] set_title
-- [ ] shh / louder (WIP)
-- [ ] set_in_for
+- [x] shh / louder
+- [x] set_in_for
 - [ ] stats (new)

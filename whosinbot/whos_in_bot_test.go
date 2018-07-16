@@ -335,10 +335,70 @@ func TestLouder(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Sure. 😃\n1. User 1", nil)
 }
 
-func TestLouderWithNoRollCallInProgress(t *testing.T) {
+func TestLouderWhenRollCallDoesNotExist(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(command("louder", nil))
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
+func TestSetInForWhenRollCallDoesNotExist(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(command("set_in_for", []string{"JohnSmith"}))
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
+func TestSetInForWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_in_for", []string{"JohnSmith"}))
+	assertBotResponse(t, response, err, 123, "1. JohnSmith", nil)
+}
+
+func TestSetInForWithReasonWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_in_for", []string{"JohnSmith", "sample", "reason"}))
+	assertBotResponse(t, response, err, 123, "1. JohnSmith (sample reason)", nil)
+}
+
+func TestSetOutForWhenRollCallDoesNotExist(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(command("set_out_for", []string{"JohnSmith"}))
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
+func TestSetOutForWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_out_for", []string{"JohnSmith"}))
+	assertBotResponse(t, response, err, 123, "Out\n - JohnSmith", nil)
+}
+
+func TestSetOutForWithReasonWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_out_for", []string{"JohnSmith", "sample", "reason"}))
+	assertBotResponse(t, response, err, 123, "Out\n - JohnSmith (sample reason)", nil)
+}
+
+func TestSetMaybeForWhenRollCallDoesNotExist(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(command("set_maybe_for", []string{"JohnSmith"}))
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
+}
+
+func TestSetMaybeForWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_maybe_for", []string{"JohnSmith"}))
+	assertBotResponse(t, response, err, 123, "Maybe\n - JohnSmith", nil)
+}
+
+func TestSetMaybeForWithReasonWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_maybe_for", []string{"JohnSmith", "sample", "reason"}))
+	assertBotResponse(t, response, err, 123, "Maybe\n - JohnSmith (sample reason)", nil)
 }
 
 // Test Helpers

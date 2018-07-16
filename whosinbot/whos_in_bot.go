@@ -28,6 +28,12 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 		return b.handleResponse(command, "out")
 	case "maybe":
 		return b.handleResponse(command, "maybe")
+	case "set_in_for":
+		return b.handleResponseFor(command, "in")
+	case "set_out_for":
+		return b.handleResponseFor(command, "out")
+	case "set_maybe_for":
+		return b.handleResponseFor(command, "maybe")
 	case "whos_in":
 		return b.handleWhosIn(command)
 	case "shh":
@@ -124,6 +130,14 @@ func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, erro
 }
 
 func (b *WhosInBot) handleResponse(command domain.Command, status string) (*domain.Response, error) {
+	return b.setAttendanceFor(command, command.From.Name, status, command.ParamsString())
+}
+
+func (b *WhosInBot) handleResponseFor(command domain.Command, status string) (*domain.Response, error) {
+	return b.setAttendanceFor(command, command.FirstParam(), status, command.ParamsStringExceptFirst())
+}
+
+func (b *WhosInBot) setAttendanceFor(command domain.Command, name string, status string, reason string) (*domain.Response, error) {
 	rollCall, err := b.DataStore.GetRollCall(command.ChatID)
 	if err != nil {
 		return nil, err
@@ -132,7 +146,7 @@ func (b *WhosInBot) handleResponse(command domain.Command, status string) (*doma
 		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
 	}
 
-	rollCallResponse := domain.NewRollCallResponse(command, status)
+	rollCallResponse := domain.NewRollCallResponse(command, name, status, reason)
 	b.DataStore.SetResponse(rollCallResponse)
 
 	err = b.DataStore.LoadRollCallResponses(rollCall)
