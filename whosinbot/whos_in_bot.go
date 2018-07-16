@@ -4,6 +4,7 @@ import (
 	"log"
 	"github.com/col/whosinbot/domain"
 	"fmt"
+	"strings"
 )
 
 type WhosInBot struct {
@@ -162,7 +163,7 @@ func responsesList(rollCall *domain.RollCall) (string) {
 	for index, response := range rollCall.In {
 		text += fmt.Sprintf("%d. %v", index+1, response.Name)
 		if len(response.Reason) > 0 {
-			text += fmt.Sprintf(" (%v)", response.Reason)
+			text += reasonWithParantheses(response.Reason)
 		}
 		if index + 1 < len(rollCall.In) {
 			text += "\n"
@@ -173,6 +174,14 @@ func responsesList(rollCall *domain.RollCall) (string) {
 	text = appendResponses(text, rollCall.Maybe, "Maybe")
 
 	return text
+}
+
+func reasonWithParantheses(reason string) string {
+	if strings.HasPrefix(reason, "(") {
+		return " "+reason
+	} else {
+		return fmt.Sprintf(" (%v)", reason)
+	}
 }
 
 func appendResponses(text string, responses []domain.RollCallResponse, status string) (string) {

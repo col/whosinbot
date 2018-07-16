@@ -152,54 +152,90 @@ func TestSetTitleWhenRollCallExists(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Roll call title set", nil)
 }
 
-func TestSetTitleWithNoRollCallInProgress(t *testing.T) {
+func TestSetTitleWhenRollCallDoesNotExists(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(command("set_title", nil))
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 
-func TestInWhenNoRollCallInProgress(t *testing.T) {
+func TestInWhenRollCallDoesNotExists(t *testing.T) {
 	setUp()
-	response, err := bot.HandleCommand(responseCommand("in"))
+	response, err := bot.HandleCommand(responseCommand("in", []string{}))
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 
-func TestInWhenRollCallIsInProgress(t *testing.T) {
+func TestInWhenWhenRollCallExists(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
 
-	response, err := bot.HandleCommand(responseCommand("in"))
+	response, err := bot.HandleCommand(responseCommand("in", []string{}))
+
+	assertResponsePersisted(t, 123, 456, "in", "JohnSmith")
+	assertBotResponse(t, response, err, 123, "1. JohnSmith", nil)
+}
+
+func TestInWithReasonWhenWhenRollCallExists(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
+
+	response, err := bot.HandleCommand(responseCommand("in", []string{"sample", "reason"}))
 
 	assertResponsePersisted(t, 123, 456, "in", "JohnSmith")
 	assertBotResponse(t, response, err, 123, "1. JohnSmith (sample reason)", nil)
 }
 
-func TestOutWhenNoRollCallInProgress(t *testing.T) {
+func TestInWithReasonWithParenthesesWhenWhenRollCallExists(t *testing.T) {
 	setUp()
-	response, err := bot.HandleCommand(responseCommand("out"))
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
+
+	response, err := bot.HandleCommand(responseCommand("in", []string{"(sample", "reason)"}))
+
+	assertResponsePersisted(t, 123, 456, "in", "JohnSmith")
+	assertBotResponse(t, response, err, 123, "1. JohnSmith (sample reason)", nil)
+}
+
+func TestOutWhenRollCallDoesNotExists(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(responseCommand("out", []string{}))
 	assert.False(t, mockDataStore.setResponseCalled)
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 
-func TestOutWhenRollCallIsInProgress(t *testing.T) {
+func TestOutWhenRollCallExists(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
-	response, err := bot.HandleCommand(responseCommand("out"))
+	response, err := bot.HandleCommand(responseCommand("out", []string{}))
+	assertResponsePersisted(t, 123, 456, "out", "JohnSmith")
+	assertBotResponse(t, response, err, 123, "Out\n - JohnSmith", nil)
+}
+
+func TestOutWithReasonWhenRollCallExists(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
+	response, err := bot.HandleCommand(responseCommand("out", []string{"sample", "reason"}))
 	assertResponsePersisted(t, 123, 456, "out", "JohnSmith")
 	assertBotResponse(t, response, err, 123, "Out\n - JohnSmith (sample reason)", nil)
 }
 
-func TestMaybeWhenNoRollCallInProgress(t *testing.T) {
+func TestMaybeWhenRollCallDoesNotExists(t *testing.T) {
 	setUp()
-	response, err := bot.HandleCommand(responseCommand("maybe"))
+	response, err := bot.HandleCommand(responseCommand("maybe", []string{}))
 	assert.False(t, mockDataStore.setResponseCalled)
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 
-func TestMaybeWhenRollCallIsInProgress(t *testing.T) {
+func TestMaybeWhenRollCallExists(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
-	response, err := bot.HandleCommand(responseCommand("maybe"))
+	response, err := bot.HandleCommand(responseCommand("maybe", []string{}))
+	assertResponsePersisted(t, 123, 456, "maybe", "JohnSmith")
+	assertBotResponse(t, response, err, 123, "Maybe\n - JohnSmith", nil)
+}
+
+func TestMaybeWithReasonWhenRollCallExists(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: ""}
+	response, err := bot.HandleCommand(responseCommand("maybe", []string{"sample", "reason"}))
 	assertResponsePersisted(t, 123, 456, "maybe", "JohnSmith")
 	assertBotResponse(t, response, err, 123, "Maybe\n - JohnSmith (sample reason)", nil)
 }
@@ -219,14 +255,14 @@ func TestWhosIn(t *testing.T) {
 			{ChatID: 123, UserID: 1, Name: "User 3", Status: "maybe", Reason: ""},
 		},
 	}
-	response, err := bot.HandleCommand(responseCommand("whos_in"))
+	response, err := bot.HandleCommand(responseCommand("whos_in", []string{}))
 	assertBotResponse(t, response, err, 123, "Test Title\n1. User 1\n\nOut\n - User 2\n\nMaybe\n - User 3", nil)
 }
 
 func TestWhosInWhenThereAreNoResponses(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{ ChatID: 123, Title:  "Test Title" }
-	response, err := bot.HandleCommand(responseCommand("whos_in"))
+	response, err := bot.HandleCommand(responseCommand("whos_in", []string{}))
 	assertBotResponse(t, response, err, 123, "No responses yet. 😢", nil)
 }
 
@@ -247,7 +283,7 @@ func TestShh(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Ok fine, I'll be quiet. 🤐", nil)
 }
 
-func TestShhWithNoRollCallInProgress(t *testing.T) {
+func TestShhWhenRollCallDoesNotExists(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(command("shh", nil))
 	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
@@ -287,11 +323,11 @@ func command(name string, params []string) domain.Command {
 	}
 }
 
-func responseCommand(status string) domain.Command {
+func responseCommand(status string, params []string) domain.Command {
 	return domain.Command{
 		ChatID: 123,
 		Name:   status,
-		Params: []string{"sample reason"},
+		Params: params,
 		From:   domain.User{UserID: 456, Name: "JohnSmith"},
 	}
 }
