@@ -46,3 +46,14 @@ make deploy
 
 - https://github.com/go-telegram-bot-api/telegram-bot-api
 - https://core.telegram.org/bots/api
+
+## TODO
+
+- [x] start_roll_call
+- [x] end_roll_call
+- [x] responses: in, out, maybe
+- [x] whos_in
+- [x] set_title
+- [ ] shh / louder (WIP)
+- [ ] set_in_for
+- [ ] stats (new)
