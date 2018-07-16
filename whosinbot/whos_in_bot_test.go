@@ -194,6 +194,28 @@ func TestInWithReasonWithParenthesesWhenWhenRollCallExists(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "1. JohnSmith (sample reason)", nil)
 }
 
+func TestInWhenRollCallIsInQuietMode(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{
+		ChatID: 123,
+		Title: "",
+		Quiet: true,
+		In: []domain.RollCallResponse{
+			{ChatID: 123, UserID: 1, Name: "User 1", Status: "in", Reason: ""},
+		},
+		Out: []domain.RollCallResponse{
+			{ChatID: 123, UserID: 1, Name: "User 2", Status: "out", Reason: ""},
+		},
+		Maybe: []domain.RollCallResponse{
+			{ChatID: 123, UserID: 1, Name: "User 3", Status: "maybe", Reason: ""},
+		},
+	}
+
+	response, err := bot.HandleCommand(responseCommand("in", []string{}))
+	assertResponsePersisted(t, 123, 456, "in", "JohnSmith")
+	assertBotResponse(t, response, err, 123, "JohnSmith is in!\nTotal: 2 in, 1 out, 1 might come\n", nil)
+}
+
 func TestOutWhenRollCallDoesNotExists(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(responseCommand("out", []string{}))
@@ -257,6 +279,12 @@ func TestWhosIn(t *testing.T) {
 	}
 	response, err := bot.HandleCommand(responseCommand("whos_in", []string{}))
 	assertBotResponse(t, response, err, 123, "Test Title\n1. User 1\n\nOut\n - User 2\n\nMaybe\n - User 3", nil)
+}
+
+func TestWhosInWhenRollCallDoesNotExist(t *testing.T) {
+	setUp()
+	response, err := bot.HandleCommand(responseCommand("whos_in", []string{}))
+	assertBotResponse(t, response, err, 123, "No roll call in progress", nil)
 }
 
 func TestWhosInWhenThereAreNoResponses(t *testing.T) {

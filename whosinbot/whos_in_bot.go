@@ -104,7 +104,7 @@ func (b *WhosInBot) handleSetQuiet(command domain.Command, quiet bool) (*domain.
 		if err != nil {
 			return nil, err
 		}
-		return &domain.Response{ChatID: command.ChatID, Text: "Sure. 😃\n"+responsesList(rollCall)}, nil
+		return &domain.Response{ChatID: command.ChatID, Text: "Sure. 😃\n"+responseList(rollCall)}, nil
 	}
 }
 
@@ -120,7 +120,7 @@ func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, erro
 	if err != nil {
 		return nil, err
 	}
-	return &domain.Response{ChatID: command.ChatID, Text: responsesList(rollCall)}, nil
+	return &domain.Response{ChatID: command.ChatID, Text: responseList(rollCall)}, nil
 }
 
 func (b *WhosInBot) handleResponse(command domain.Command, status string) (*domain.Response, error) {
@@ -140,10 +140,16 @@ func (b *WhosInBot) handleResponse(command domain.Command, status string) (*doma
 		return nil, err
 	}
 
-	return &domain.Response{ChatID: command.ChatID, Text: responsesList(rollCall)}, nil
+	var response string
+	if rollCall.Quiet {
+		response = quietResponseList(rollCall, rollCallResponse)
+	} else {
+		response = responseList(rollCall)
+	}
+	return &domain.Response{ChatID: command.ChatID, Text: response}, nil
 }
 
-func responsesList(rollCall *domain.RollCall) (string) {
+func responseList(rollCall *domain.RollCall) string {
 	// DEBUG
 	log.Printf("Response for roll call: %+v\n", rollCall)
 
@@ -174,6 +180,11 @@ func responsesList(rollCall *domain.RollCall) (string) {
 	text = appendResponses(text, rollCall.Maybe, "Maybe")
 
 	return text
+}
+
+func quietResponseList(rollCall *domain.RollCall, rollCallResponse domain.RollCallResponse) string {
+	var response = fmt.Sprintf("%v is %v!", rollCallResponse.Name, rollCallResponse.Status)
+	return fmt.Sprintf("%v\nTotal: %d in, %d out, %d might come\n", response, len(rollCall.In), len(rollCall.Out), len(rollCall.Maybe))
 }
 
 func reasonWithParantheses(reason string) string {
