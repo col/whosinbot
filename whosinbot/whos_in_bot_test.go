@@ -361,6 +361,13 @@ func TestSetInForWithReasonWhenRollCallExist(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "1. JohnSmith (sample reason)", nil)
 }
 
+func TestSetInForWithoutANameWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_in_for", []string{}))
+	assertBotResponse(t, response, err, 123, "Please provide the persons first name.", nil)
+}
+
 func TestSetOutForWhenRollCallDoesNotExist(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(command("set_out_for", []string{"JohnSmith"}))
@@ -381,6 +388,13 @@ func TestSetOutForWithReasonWhenRollCallExist(t *testing.T) {
 	assertBotResponse(t, response, err, 123, "Out\n - JohnSmith (sample reason)", nil)
 }
 
+func TestSetOutForWithoutANameWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_out_for", []string{}))
+	assertBotResponse(t, response, err, 123, "Please provide the persons first name.", nil)
+}
+
 func TestSetMaybeForWhenRollCallDoesNotExist(t *testing.T) {
 	setUp()
 	response, err := bot.HandleCommand(command("set_maybe_for", []string{"JohnSmith"}))
@@ -399,6 +413,13 @@ func TestSetMaybeForWithReasonWhenRollCallExist(t *testing.T) {
 	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
 	response, err := bot.HandleCommand(command("set_maybe_for", []string{"JohnSmith", "sample", "reason"}))
 	assertBotResponse(t, response, err, 123, "Maybe\n - JohnSmith (sample reason)", nil)
+}
+
+func TestSetMaybeForWithoutANameWhenRollCallExist(t *testing.T) {
+	setUp()
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123}
+	response, err := bot.HandleCommand(command("set_maybe_for", []string{}))
+	assertBotResponse(t, response, err, 123, "Please provide the persons first name.", nil)
 }
 
 // Test Helpers

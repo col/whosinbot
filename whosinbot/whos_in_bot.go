@@ -134,6 +134,9 @@ func (b *WhosInBot) handleResponse(command domain.Command, status string) (*doma
 }
 
 func (b *WhosInBot) handleResponseFor(command domain.Command, status string) (*domain.Response, error) {
+	if len(command.FirstParam()) == 0 {
+		return &domain.Response{ChatID: command.ChatID, Text: "Please provide the persons first name."}, nil
+	}
 	return b.setAttendanceFor(command, command.FirstParam(), status, command.ParamsStringExceptFirst())
 }
 

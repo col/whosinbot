@@ -21,7 +21,10 @@ func (c Command) FirstParam() string {
 }
 
 func (c Command) ParamsStringExceptFirst() string {
-	return strings.Join(c.Params[1:], " ")
+	if len(c.Params) > 1 {
+		return strings.Join(c.Params[1:], " ")
+	}
+	return ""
 }
 
 type User struct {
