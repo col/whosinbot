@@ -1,10 +1,10 @@
 package http
 
 import (
-	"net/http"
-	"io/ioutil"
-	"github.com/col/whosinbot/whosinbot"
 	"github.com/col/whosinbot/telegram"
+	"github.com/col/whosinbot/whosinbot"
+	"io/ioutil"
+	"net/http"
 	"os"
 )
 

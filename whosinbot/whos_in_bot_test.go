@@ -198,8 +198,8 @@ func TestInWhenRollCallIsInQuietMode(t *testing.T) {
 	setUp()
 	mockDataStore.rollCall = &domain.RollCall{
 		ChatID: 123,
-		Title: "",
-		Quiet: true,
+		Title:  "",
+		Quiet:  true,
 		In: []domain.RollCallResponse{
 			{ChatID: 123, UserID: 1, Name: "User 1", Status: "in", Reason: ""},
 		},
@@ -289,7 +289,7 @@ func TestWhosInWhenRollCallDoesNotExist(t *testing.T) {
 
 func TestWhosInWhenThereAreNoResponses(t *testing.T) {
 	setUp()
-	mockDataStore.rollCall = &domain.RollCall{ ChatID: 123, Title:  "Test Title" }
+	mockDataStore.rollCall = &domain.RollCall{ChatID: 123, Title: "Test Title"}
 	response, err := bot.HandleCommand(responseCommand("whos_in", []string{}))
 	assertBotResponse(t, response, err, 123, "No responses yet. 😢", nil)
 }

@@ -1,9 +1,9 @@
 package whosinbot
 
 import (
-	"log"
-	"github.com/col/whosinbot/domain"
 	"fmt"
+	"github.com/col/whosinbot/domain"
+	"log"
 	"strings"
 )
 
@@ -110,7 +110,7 @@ func (b *WhosInBot) handleSetQuiet(command domain.Command, quiet bool) (*domain.
 		if err != nil {
 			return nil, err
 		}
-		return &domain.Response{ChatID: command.ChatID, Text: "Sure. 😃\n"+responseList(rollCall)}, nil
+		return &domain.Response{ChatID: command.ChatID, Text: "Sure. 😃\n" + responseList(rollCall)}, nil
 	}
 }
 
@@ -188,7 +188,7 @@ func responseList(rollCall *domain.RollCall) string {
 		if len(response.Reason) > 0 {
 			text += reasonWithParantheses(response.Reason)
 		}
-		if index + 1 < len(rollCall.In) {
+		if index+1 < len(rollCall.In) {
 			text += "\n"
 		}
 	}
@@ -206,13 +206,13 @@ func quietResponseList(rollCall *domain.RollCall, rollCallResponse domain.RollCa
 
 func reasonWithParantheses(reason string) string {
 	if strings.HasPrefix(reason, "(") {
-		return " "+reason
+		return " " + reason
 	} else {
 		return fmt.Sprintf(" (%v)", reason)
 	}
 }
 
-func appendResponses(text string, responses []domain.RollCallResponse, status string) (string) {
+func appendResponses(text string, responses []domain.RollCallResponse, status string) string {
 	if len(responses) > 0 {
 		if len(text) > 0 {
 			text += "\n\n"
@@ -224,7 +224,7 @@ func appendResponses(text string, responses []domain.RollCallResponse, status st
 		if len(response.Reason) > 0 {
 			text += fmt.Sprintf(" (%v)", response.Reason)
 		}
-		if index + 1 < len(responses) {
+		if index+1 < len(responses) {
 			text += "\n"
 		}
 	}

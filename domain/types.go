@@ -1,6 +1,7 @@
 package domain
 
 import "strings"
+import "time"
 
 type Command struct {
 	ChatID int64
@@ -28,8 +29,8 @@ func (c Command) ParamsStringExceptFirst() string {
 }
 
 type User struct {
-	UserID   int64
-	Name string
+	UserID int64
+	Name   string
 }
 
 func EmptyCommand() Command {
@@ -68,7 +69,7 @@ type RollCall struct {
 	Maybe  []RollCallResponse
 }
 
-func (r *RollCall)AddResponse(response RollCallResponse) {
+func (r *RollCall) AddResponse(response RollCallResponse) {
 	switch response.Status {
 	case "in":
 		r.In = append(r.In, response)
@@ -80,19 +81,27 @@ func (r *RollCall)AddResponse(response RollCallResponse) {
 }
 
 type RollCallResponse struct {
-	ChatID   int64
-	UserID   int64
-	Name     string
-	Status   string
-	Reason   string
+	ChatID int64
+	UserID int64
+	Name   string
+	Status string
+	Reason string
+	Date   time.Time
 }
 
 func NewRollCallResponse(command Command, name string, status string, reason string) RollCallResponse {
 	return RollCallResponse{
 		ChatID: command.ChatID,
 		UserID: command.From.UserID,
-		Name: name,
+		Name:   name,
 		Status: status,
 		Reason: reason,
+		Date:   time.Now(),
 	}
 }
+
+type Responses []RollCallResponse
+
+func (r Responses) Len() int           { return len(r) }
+func (r Responses) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
+func (r Responses) Less(i, j int) bool { return r[i].Date.Before(r[j].Date) }

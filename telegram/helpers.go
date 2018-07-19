@@ -1,9 +1,9 @@
 package telegram
 
 import (
+	"encoding/json"
 	"github.com/col/whosinbot/domain"
 	"gopkg.in/telegram-bot-api.v4"
-	"encoding/json"
 	"strings"
 )
 
@@ -18,9 +18,9 @@ func ParseUpdate(requestBody []byte) (domain.Command, error) {
 		ChatID: update.Message.Chat.ID,
 		Name:   update.Message.Command(),
 		Params: strings.Fields(update.Message.CommandArguments()),
-		From:   domain.User{
+		From: domain.User{
 			UserID: int64(update.Message.From.ID),
-			Name: update.Message.From.FirstName,
+			Name:   update.Message.From.FirstName,
 		},
 	}
 	return command, err

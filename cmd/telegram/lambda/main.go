@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/col/whosinbot/dynamodb"
 	"context"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/col/whosinbot/dynamodb"
 	"github.com/col/whosinbot/telegram"
 	"github.com/col/whosinbot/whosinbot"
 	"log"
@@ -34,8 +34,8 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 
 	// Process Command
-	dataStore := &dynamodb.DynamoDataStore{}
-	bot := whosinbot.WhosInBot{ DataStore: dataStore }
+	dataStore := dynamodb.NewDynamoDataStore()
+	bot := whosinbot.WhosInBot{DataStore: dataStore}
 	response, err := bot.HandleCommand(command)
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 400}, err
