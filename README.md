@@ -1,5 +1,9 @@
 # WhosInBot
 
+## Environment setup
+You will need `.env` file, refer to `.env.template`
+Use `aws configure` to generate config files
+
 ## Register webhook
 
 Set Webhook
@@ -33,6 +37,11 @@ npm install -g serverless
 
 ```
 make build
+```
+## Run tests
+
+```
+make test
 ```
 
 ## Deploy
