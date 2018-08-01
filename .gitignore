@@ -8,3 +8,4 @@ bin
 vendor
 .env
 node_modules
+.idea
