@@ -323,7 +323,7 @@ func getResponseKey(chatID int64, userID string) map[string]*dynamodb.AttributeV
 			N: aws.String(strconv.Itoa(int(chatID))),
 		},
 		"user_id": {
-			N: aws.String(userID),
+			S: aws.String(userID),
 		},
 	}
 }
