@@ -4,7 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/col/whosinbot/domain"
+	"whosinbot/domain"
 	"log"
 	"os"
 	"sort"
@@ -139,11 +139,6 @@ func (d DynamoDataStore) getRollCallResponses(chatID int64) ([]domain.RollCallRe
 
 	var responses = []domain.RollCallResponse{}
 	for _, item := range result.Items {
-		userID, err := strconv.Atoi(*item["user_id"].N)
-		if err != nil {
-			log.Println(err.Error())
-			return nil, err
-		}
 
 		reason := *item["reason"].S
 		if reason == EmptyString {
@@ -159,7 +154,7 @@ func (d DynamoDataStore) getRollCallResponses(chatID int64) ([]domain.RollCallRe
 
 		response := domain.RollCallResponse{
 			ChatID: chatID,
-			UserID: int64(userID),
+			UserID: *item["user_id"].S,
 			Name:   *item["name"].S,
 			Status: *item["status"].S,
 			Reason: reason,
@@ -322,13 +317,13 @@ func getRollCallKey(chatID int64) map[string]*dynamodb.AttributeValue {
 	}
 }
 
-func getResponseKey(chatID int64, userID int64) map[string]*dynamodb.AttributeValue {
+func getResponseKey(chatID int64, userID string) map[string]*dynamodb.AttributeValue {
 	return map[string]*dynamodb.AttributeValue{
 		"chat_id": {
 			N: aws.String(strconv.Itoa(int(chatID))),
 		},
 		"user_id": {
-			N: aws.String(strconv.Itoa(int(userID))),
+			N: aws.String(userID),
 		},
 	}
 }

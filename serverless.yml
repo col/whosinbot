@@ -93,7 +93,7 @@ resources:
             AttributeType: N
           -
             AttributeName: user_id
-            AttributeType: N
+            AttributeType: S
         KeySchema:
           -
             AttributeName: chat_id

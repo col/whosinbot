@@ -1,8 +1,8 @@
 package http
 
 import (
-	"github.com/col/whosinbot/telegram"
-	"github.com/col/whosinbot/whosinbot"
+	"whosinbot/telegram"
+	"whosinbot/whosinbot"
 	"io/ioutil"
 	"net/http"
 	"os"

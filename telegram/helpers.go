@@ -2,9 +2,10 @@ package telegram
 
 import (
 	"encoding/json"
-	"github.com/col/whosinbot/domain"
+	"whosinbot/domain"
 	"gopkg.in/telegram-bot-api.v4"
 	"strings"
+	"strconv"
 )
 
 func ParseUpdate(requestBody []byte) (domain.Command, error) {
@@ -19,7 +20,7 @@ func ParseUpdate(requestBody []byte) (domain.Command, error) {
 		Name:   update.Message.Command(),
 		Params: strings.Fields(update.Message.CommandArguments()),
 		From: domain.User{
-			UserID: int64(update.Message.From.ID),
+			UserID: strconv.Itoa(update.Message.From.ID),
 			Name:   update.Message.From.FirstName,
 		},
 	}

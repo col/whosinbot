@@ -29,7 +29,7 @@ func (c Command) ParamsStringExceptFirst() string {
 }
 
 type User struct {
-	UserID int64
+	UserID string
 	Name   string
 }
 
@@ -82,17 +82,21 @@ func (r *RollCall) AddResponse(response RollCallResponse) {
 
 type RollCallResponse struct {
 	ChatID int64
-	UserID int64
+	UserID string
 	Name   string
 	Status string
 	Reason string
 	Date   time.Time
 }
 
-func NewRollCallResponse(command Command, name string, status string, reason string) RollCallResponse {
+func NewRollCallResponse(command Command, name string, status string, reason string, isSetStatusFor bool) RollCallResponse {
+	var userId = command.From.UserID
+	if isSetStatusFor {
+		userId = name
+	}
 	return RollCallResponse{
 		ChatID: command.ChatID,
-		UserID: command.From.UserID,
+		UserID: userId,
 		Name:   name,
 		Status: status,
 		Reason: reason,

@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/col/whosinbot/dynamodb"
-	"github.com/col/whosinbot/telegram"
-	"github.com/col/whosinbot/whosinbot"
+	"whosinbot/dynamodb"
+	"whosinbot/telegram"
+	"whosinbot/whosinbot"
 	"log"
 	"strings"
 )

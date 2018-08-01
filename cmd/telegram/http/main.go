@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/col/whosinbot/dynamodb"
-	whttp "github.com/col/whosinbot/http"
-	"github.com/col/whosinbot/whosinbot"
+	"whosinbot/dynamodb"
+	whttp "whosinbot/http"
+	"whosinbot/whosinbot"
 	"net/http"
 )
 

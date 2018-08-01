@@ -2,7 +2,7 @@ package whosinbot
 
 import (
 	"fmt"
-	"github.com/col/whosinbot/domain"
+	"whosinbot/domain"
 	"log"
 	"strings"
 )
@@ -130,17 +130,17 @@ func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, erro
 }
 
 func (b *WhosInBot) handleResponse(command domain.Command, status string) (*domain.Response, error) {
-	return b.setAttendanceFor(command, command.From.Name, status, command.ParamsString())
+	return b.setAttendanceFor(command, command.From.Name, status, command.ParamsString(), false)
 }
 
 func (b *WhosInBot) handleResponseFor(command domain.Command, status string) (*domain.Response, error) {
 	if len(command.FirstParam()) == 0 {
 		return &domain.Response{ChatID: command.ChatID, Text: "Please provide the persons first name."}, nil
 	}
-	return b.setAttendanceFor(command, command.FirstParam(), status, command.ParamsStringExceptFirst())
+	return b.setAttendanceFor(command, command.FirstParam(), status, command.ParamsStringExceptFirst(), true)
 }
 
-func (b *WhosInBot) setAttendanceFor(command domain.Command, name string, status string, reason string) (*domain.Response, error) {
+func (b *WhosInBot) setAttendanceFor(command domain.Command, name string, status string, reason string, isSetStatusFor bool) (*domain.Response, error) {
 	rollCall, err := b.DataStore.GetRollCall(command.ChatID)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func (b *WhosInBot) setAttendanceFor(command domain.Command, name string, status
 		return &domain.Response{Text: "No roll call in progress", ChatID: command.ChatID}, nil
 	}
 
-	rollCallResponse := domain.NewRollCallResponse(command, name, status, reason)
+	rollCallResponse := domain.NewRollCallResponse(command, name, status, reason, isSetStatusFor)
 	b.DataStore.SetResponse(rollCallResponse)
 
 	err = b.DataStore.LoadRollCallResponses(rollCall)

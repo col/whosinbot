@@ -3,7 +3,7 @@ package telegram
 import (
 	"errors"
 	"fmt"
-	"github.com/col/whosinbot/domain"
+	"whosinbot/domain"
 	"gopkg.in/telegram-bot-api.v4"
 	"os"
 )

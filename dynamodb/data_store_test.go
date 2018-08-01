@@ -2,7 +2,7 @@ package dynamodb
 
 import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/col/whosinbot/domain"
+	"whosinbot/domain"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
