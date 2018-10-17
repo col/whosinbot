@@ -16,7 +16,7 @@ func ParseUpdate(requestBody []byte) (domain.Command, error) {
 	}
 	// TODO: split this into a mapping function and write some tests around it
 	command := domain.Command{
-		ChatID: update.Message.Chat.ID,
+		ChatID: strconv.Itoa(int(update.Message.Chat.ID)),
 		Name:   update.Message.Command(),
 		Params: strings.Fields(update.Message.CommandArguments()),
 		From: domain.User{
