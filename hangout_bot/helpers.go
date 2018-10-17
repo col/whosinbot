@@ -1,4 +1,4 @@
-package chat_bot
+package hangout_bot
 
 import (
 	"encoding/json"

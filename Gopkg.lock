@@ -2,17 +2,20 @@
 
 
 [[projects]]
+  digest = "1:29401894b0873ce84bca18ddb3d614300851999478cc2ce4de6fe473db4842b6"
   name = "github.com/aws/aws-lambda-go"
   packages = [
     "events",
     "lambda",
     "lambda/messages",
-    "lambdacontext"
+    "lambdacontext",
   ]
+  pruneopts = ""
   revision = "4d30d0ff60440c2d0480a15747c96ee71c3c53d4"
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:9dfdecc03ecd10fc21f8ae3c02e2061c24a6aa2e13d0e3308329841d16dc892f"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -44,55 +47,99 @@
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
     "service/dynamodb",
-    "service/sts"
+    "service/sts",
   ]
+  pruneopts = ""
   revision = "9e9afa0895e9daff556cc18f90dc53eb91f41ffd"
   version = "v1.14.26"
 
 [[projects]]
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
-  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
-  version = "v1.1.0"
+  branch = "master"
+  digest = "1:ac7ff0abd3d0f08a01e66a9d4da4cec443ef1045bfc687b300e12453348bac55"
+  name = "github.com/fnproject/fdk-go"
+  packages = [
+    ".",
+    "utils",
+  ]
+  pruneopts = ""
+  revision = "1c783fe496250a3e27445273fb43cace6fd4ee2b"
 
 [[projects]]
+  digest = "1:858b7fe7b0f4bc7ef9953926828f2816ea52d01a88d72d1c45bc8c108f23c356"
   name = "github.com/go-ini/ini"
   packages = ["."]
+  pruneopts = ""
   revision = "358ee7663966325963d4e8b2e1fbd570c5195153"
   version = "v1.38.1"
 
 [[projects]]
+  digest = "1:6f49eae0c1e5dab1dafafee34b207aeb7a42303105960944828c2079b92fc88e"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
+  pruneopts = ""
   revision = "0b12d6b5"
 
 [[projects]]
-  name = "github.com/pmezard/go-difflib"
-  packages = ["difflib"]
-  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
-  version = "v1.0.0"
-
-[[projects]]
+  digest = "1:091310675f48748a9b227ba2a28eb75ad25fb3bbd96f081a362b83d9073a54c3"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
-  version = "v1.2.2"
+  pruneopts = ""
+  revision = "232e8563676cd15c3a36ba5e675ad4312ac4cb11"
+  version = "v1.0"
 
 [[projects]]
+  digest = "1:3bfdafac43ceb125f775eb79b8ee8f1e976e227464434ffad40f956ac029e760"
   name = "github.com/technoweenie/multipartstreamer"
   packages = ["."]
+  pruneopts = ""
   revision = "a90a01d73ae432e2611d178c18367fbaa13e0154"
   version = "v1.0.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:547dcb6aebfb7fb17947660ebb034470c13f4d63d893def190a2f7ba3d09bc38"
+  name = "golang.org/x/net"
+  packages = [
+    "context",
+    "context/ctxhttp",
+  ]
+  pruneopts = ""
+  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
+
+[[projects]]
+  branch = "master"
+  digest = "1:db8adde0e8b04865546c057782ce223a36e35deae3224f908cb9d2f53abc7a52"
+  name = "google.golang.org/api"
+  packages = [
+    "chat/v1",
+    "gensupport",
+    "googleapi",
+    "googleapi/internal/uritemplates",
+  ]
+  pruneopts = ""
+  revision = "3f6e8463aa1d824abe11b439d178c02220079da5"
+
+[[projects]]
+  digest = "1:1a95777771ac93e770a5c5d25066de5fb10d43a7a1cb1dced6727c447490f10f"
   name = "gopkg.in/telegram-bot-api.v4"
   packages = ["."]
+  pruneopts = ""
   revision = "0e0af0c480ea98e982d5f4d45fb39577c6ab1e3e"
   version = "v4.6.2"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "25b86146913839b262563bd7cbd5d2ad48d4480c76b25f2d388869c94fc5518c"
+  input-imports = [
+    "github.com/aws/aws-lambda-go/events",
+    "github.com/aws/aws-lambda-go/lambda",
+    "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/dynamodb",
+    "github.com/fnproject/fdk-go",
+    "github.com/stretchr/testify/assert",
+    "google.golang.org/api/chat/v1",
+    "gopkg.in/telegram-bot-api.v4",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
