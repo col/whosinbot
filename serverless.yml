@@ -60,6 +60,12 @@ functions:
             parameters:
               paths:
                 token: true
+  hangout:
+    handler: bin/hangout_lambda
+    events:
+      - http:
+          path: hangout
+          method: post
 
 #    Define function environment variables here
 #    environment:

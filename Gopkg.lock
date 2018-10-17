@@ -54,17 +54,6 @@
   version = "v1.14.26"
 
 [[projects]]
-  branch = "master"
-  digest = "1:ac7ff0abd3d0f08a01e66a9d4da4cec443ef1045bfc687b300e12453348bac55"
-  name = "github.com/fnproject/fdk-go"
-  packages = [
-    ".",
-    "utils",
-  ]
-  pruneopts = ""
-  revision = "1c783fe496250a3e27445273fb43cace6fd4ee2b"
-
-[[projects]]
   digest = "1:858b7fe7b0f4bc7ef9953926828f2816ea52d01a88d72d1c45bc8c108f23c356"
   name = "github.com/go-ini/ini"
   packages = ["."]
@@ -136,7 +125,6 @@
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/dynamodb",
-    "github.com/fnproject/fdk-go",
     "github.com/stretchr/testify/assert",
     "google.golang.org/api/chat/v1",
     "gopkg.in/telegram-bot-api.v4",
