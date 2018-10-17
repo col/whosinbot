@@ -74,7 +74,7 @@ resources:
         AttributeDefinitions:
           -
             AttributeName: chat_id
-            AttributeType: N
+            AttributeType: S
         KeySchema:
           -
             AttributeName: chat_id
@@ -90,7 +90,7 @@ resources:
         AttributeDefinitions:
           -
             AttributeName: chat_id
-            AttributeType: N
+            AttributeType: S
           -
             AttributeName: user_id
             AttributeType: S

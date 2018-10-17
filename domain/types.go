@@ -4,7 +4,7 @@ import "strings"
 import "time"
 
 type Command struct {
-	ChatID int64
+	ChatID string
 	Name   string
 	Params []string
 	From   User
@@ -35,7 +35,7 @@ type User struct {
 
 func EmptyCommand() Command {
 	return Command{
-		ChatID: 0,
+		ChatID: "",
 		Name:   "",
 		Params: nil,
 		From:   User{},
@@ -43,7 +43,7 @@ func EmptyCommand() Command {
 }
 
 type Response struct {
-	ChatID int64
+	ChatID string
 	Text   string
 }
 
@@ -56,12 +56,12 @@ type DataStore interface {
 
 	SetResponse(rollCallResponse RollCallResponse) error
 
-	GetRollCall(chatID int64) (*RollCall, error)
+	GetRollCall(chatID string) (*RollCall, error)
 	LoadRollCallResponses(rollCall *RollCall) error
 }
 
 type RollCall struct {
-	ChatID int64
+	ChatID string
 	Title  string
 	Quiet  bool
 	In     []RollCallResponse
@@ -81,7 +81,7 @@ func (r *RollCall) AddResponse(response RollCallResponse) {
 }
 
 type RollCallResponse struct {
-	ChatID int64
+	ChatID string
 	UserID string
 	Name   string
 	Status string

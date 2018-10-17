@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strconv"
 	"time"
 )
 
@@ -65,9 +64,9 @@ func (d DynamoDataStore) StartRollCall(rollCall domain.RollCall) error {
 	return nil
 }
 
-func (d DynamoDataStore) GetRollCall(chatID int64) (*domain.RollCall, error) {
+func (d DynamoDataStore) GetRollCall(chatID string) (*domain.RollCall, error) {
 	// DEBUG
-	log.Printf("GetRollCall: %+d\n", chatID)
+	log.Printf("GetRollCall: %s\n", chatID)
 
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(os.Getenv("ROLLCALL_TABLE")),
@@ -113,9 +112,9 @@ func (d DynamoDataStore) LoadRollCallResponses(rollCall *domain.RollCall) error 
 	return nil
 }
 
-func (d DynamoDataStore) getRollCallResponses(chatID int64) ([]domain.RollCallResponse, error) {
+func (d DynamoDataStore) getRollCallResponses(chatID string) ([]domain.RollCallResponse, error) {
 	// DEBUG
-	log.Printf("getRollCallResponses ChatID: %+d\n", chatID)
+	log.Printf("getRollCallResponses ChatID: %s\n", chatID)
 
 	keyConditionExpression := "chat_id = :chat_id"
 	selectString := dynamodb.SelectAllAttributes
@@ -124,7 +123,7 @@ func (d DynamoDataStore) getRollCallResponses(chatID int64) ([]domain.RollCallRe
 		Select: &selectString,
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":chat_id": {
-				N: aws.String(strconv.Itoa(int(chatID))),
+				S: aws.String(chatID),
 			},
 		},
 		KeyConditionExpression: &keyConditionExpression,
@@ -309,18 +308,18 @@ func (d DynamoDataStore) SetQuiet(rollCall domain.RollCall, quiet bool) error {
 	return nil
 }
 
-func getRollCallKey(chatID int64) map[string]*dynamodb.AttributeValue {
+func getRollCallKey(chatID string) map[string]*dynamodb.AttributeValue {
 	return map[string]*dynamodb.AttributeValue{
 		"chat_id": {
-			N: aws.String(strconv.Itoa(int(chatID))),
+			S: aws.String(chatID),
 		},
 	}
 }
 
-func getResponseKey(chatID int64, userID string) map[string]*dynamodb.AttributeValue {
+func getResponseKey(chatID string, userID string) map[string]*dynamodb.AttributeValue {
 	return map[string]*dynamodb.AttributeValue{
 		"chat_id": {
-			N: aws.String(strconv.Itoa(int(chatID))),
+			S: aws.String(chatID),
 		},
 		"user_id": {
 			S: aws.String(userID),

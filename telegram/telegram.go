@@ -6,6 +6,7 @@ import (
 	"whosinbot/domain"
 	"gopkg.in/telegram-bot-api.v4"
 	"os"
+	"strconv"
 )
 
 type Telegram struct {
@@ -31,7 +32,12 @@ func (t *Telegram) SendResponse(response *domain.Response) error {
 		return err
 	}
 
-	_, err = bot.Send(tgbotapi.NewMessage(response.ChatID, response.Text))
+	messageChatId, err := strconv.ParseInt(response.ChatID, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	_, err = bot.Send(tgbotapi.NewMessage(messageChatId, response.Text))
 	if err != nil {
 		return err
 	}

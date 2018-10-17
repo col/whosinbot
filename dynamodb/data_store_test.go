@@ -73,7 +73,7 @@ func setUp() {
 func TestStartRollCall(t *testing.T) {
 	setUp()
 	rollCall := domain.RollCall{
-		ChatID: 123,
+		ChatID: "123",
 		Title:  "Dinner",
 		Quiet:  false,
 	}
@@ -86,7 +86,7 @@ func TestStartRollCall(t *testing.T) {
 func TestStartRollCallSetsTitleToSpaceWhenEmpty(t *testing.T) {
 	setUp()
 	rollCall := domain.RollCall{
-		ChatID: 123,
+		ChatID: "123",
 	}
 	dataSource.StartRollCall(rollCall)
 	assert.True(t, mockDynamoService.UpdateItemCalled)
