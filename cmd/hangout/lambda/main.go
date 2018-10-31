@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"google.golang.org/api/chat/v1"
 	"log"
-	"whosinbot/hangout_bot"
+	"whosinbot/hangout"
 	"whosinbot/dynamodb"
 	"whosinbot/whosinbot"
 )
@@ -18,7 +18,7 @@ func main() {
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Printf("Request Body: " + request.Body)
 
-	command, err := hangout_bot.ParseDeprecatedEvent([]byte(request.Body))
+	command, err := hangout.ParseDeprecatedEvent([]byte(request.Body))
 	if err != nil {
 		return events.APIGatewayProxyResponse{StatusCode: 400}, err
 	}
