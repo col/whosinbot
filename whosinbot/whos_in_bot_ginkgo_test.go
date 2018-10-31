@@ -20,18 +20,19 @@ var _ = Describe("WhosInBot", func() {
 				},
 			}
 
-			formattedAvailableCommands := fmt.Sprint("start_roll_call\n" +
-				"end_roll_call\n" +
-				"set_title\n" +
-				"in\n" +
-				"out\n" +
-				"maybe\n" +
-				"set_in_for\n" +
-				"set_out_for\n" +
-				"set_maybe_for\n" +
-				"whos_in\n" +
-				"shh\n" +
-				"louder\n")
+			formattedAvailableCommands := fmt.Sprint("Available commands:\n" +
+				" 🍺 start_roll_call\n" +
+				" 🍺 end_roll_call\n" +
+				" 🍺 set_title\n" +
+				" 🍺 in\n" +
+				" 🍺 out\n" +
+				" 🍺 maybe\n" +
+				" 🍺 set_in_for\n" +
+				" 🍺 set_out_for\n" +
+				" 🍺 set_maybe_for\n" +
+				" 🍺 whos_in\n" +
+				" 🍺 shh\n" +
+				" 🍺 louder\n")
 			expectedResponse := &domain.Response{ChatID: command.ChatID,
 				Text: formattedAvailableCommands}
 

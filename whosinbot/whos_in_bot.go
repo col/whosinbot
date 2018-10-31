@@ -137,9 +137,9 @@ func (b *WhosInBot) handleAvailableCommands(command domain.Command) (*domain.Res
 }
 
 func formatAvailableCommands(allCommands []string) string {
-	formatted := ""
+	formatted := "Available commands:\n"
 	for _, command := range allCommands {
-		formatted += fmt.Sprintf("%s\n", command)
+		formatted += fmt.Sprintf(" 🍺 %s\n", command)
 	}
 	return formatted
 }
