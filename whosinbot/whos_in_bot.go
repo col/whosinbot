@@ -40,6 +40,8 @@ func (b *WhosInBot) HandleCommand(command domain.Command) (*domain.Response, err
 		return b.handleSetQuiet(command, true)
 	case "louder":
 		return b.handleSetQuiet(command, false)
+	case "available_commands":
+		return b.handleAvailableCommands(command)
 	default:
 		log.Printf("Not a bot command: %+v\n", command)
 		return nil, nil
@@ -127,6 +129,19 @@ func (b *WhosInBot) handleWhosIn(command domain.Command) (*domain.Response, erro
 		return nil, err
 	}
 	return &domain.Response{ChatID: command.ChatID, Text: responseList(rollCall)}, nil
+}
+
+func (b *WhosInBot) handleAvailableCommands(command domain.Command) (*domain.Response, error) {
+	formattedAvailableCommands := formatAvailableCommands(domain.AllCommands())
+	return &domain.Response{ChatID: command.ChatID, Text: formattedAvailableCommands}, nil
+}
+
+func formatAvailableCommands(allCommands []string) string {
+	formatted := ""
+	for _, command := range allCommands {
+		formatted += fmt.Sprintf("%s\n", command)
+	}
+	return formatted
 }
 
 func (b *WhosInBot) handleResponse(command domain.Command, status string) (*domain.Response, error) {

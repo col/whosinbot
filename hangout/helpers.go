@@ -10,24 +10,10 @@ import (
 )
 
 var (
-	allCommands []string = []string{
-		"start_roll_call",
-		"end_roll_call",
-		"set_title",
-		"in",
-		"out",
-		"maybe",
-		"set_in_for",
-		"set_out_for",
-		"set_maybe_for",
-		"whos_in",
-		"shh",
-		"louder",
-	}
-	startRollCallAlias string = "start"
-	endRollCallAlias   string = "end"
-	whosInAlias        string = "ls"
-	setTitleAlias      string = "title"
+	startRollCallAlias = "start"
+	endRollCallAlias   = "end"
+	whosInAlias        = "ls"
+	setTitleAlias      = "title"
 )
 
 func ParseDeprecatedEvent(requestBody []byte) (domain.Command, error) {
@@ -41,14 +27,23 @@ func ParseDeprecatedEvent(requestBody []byte) (domain.Command, error) {
 
 	// TODO: split this into a mapping function and write some tests around it
 	threadName := deprecatedEvent.Message.Thread.Name
+	avaliableCommands := domain.Command{
+		ChatID: threadName,
+		Name:   "available_commands",
+		Params: []string{},
+		From: domain.User{
+			UserID: deprecatedEvent.Message.Sender.Name,
+			Name:   deprecatedEvent.Message.Sender.DisplayName,
+		},
+	}
 	arguments := strings.Fields(deprecatedEvent.Message.ArgumentText)
 	if len(arguments) <= 0 {
-		return domain.EmptyCommand(), errors.New("no argument provided")
+		return avaliableCommands, nil
 	}
-	
+
 	name, err := parseCommandName(arguments[0])
 	if err != nil {
-		return domain.EmptyCommand(), err
+		return avaliableCommands, nil
 	}
 
 	command := domain.Command{
@@ -73,7 +68,7 @@ func contains(set []string, element string) bool {
 }
 
 func parseCommandName(commandNameArgument string) (string, error) {
-	if contains(allCommands, commandNameArgument){
+	if contains(domain.AllCommands(), commandNameArgument){
 		return commandNameArgument, nil
 	}
 

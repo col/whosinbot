@@ -95,22 +95,23 @@ var _ = Describe("helper", func() {
 
 	Describe("#ParseDeprecatedEvent", func() {
 		When("successful", func() {
-			It("parses request body to DeprecatedEvent", func() {
-				deprecatedEvent := chat.DeprecatedEvent{
-					Action:                    nil,
-					ConfigCompleteRedirectUrl: "",
-					EventTime:                 "",
-					Message: &chat.Message{
-						ArgumentText: "   in argument1   argument2",
-						Sender: &chat.User{
-							DisplayName: "Ryuichi Sakamoto",
-							Name:        "users/1234567",
-						},
-						Thread: &chat.Thread{
-							Name: "thread1",
-						},
+			deprecatedEvent := chat.DeprecatedEvent{
+				Action:                    nil,
+				ConfigCompleteRedirectUrl: "",
+				EventTime:                 "",
+				Message: &chat.Message{
+					ArgumentText: "   in argument1   argument2",
+					Sender: &chat.User{
+						DisplayName: "Ryuichi Sakamoto",
+						Name:        "users/1234567",
 					},
-				}
+					Thread: &chat.Thread{
+						Name: "thread1",
+					},
+				},
+			}
+
+			It("parses request body to DeprecatedEvent", func() {
 				requestBody, _ := json.Marshal(deprecatedEvent)
 				command, _ := ParseDeprecatedEvent(requestBody)
 
@@ -123,7 +124,7 @@ var _ = Describe("helper", func() {
 				}))
 			})
 
-			Context("parses alias to valid cammand name", func() {
+			Context("parses alias to valid command name", func() {
 				It("replaces 'start' as start_roll_call command", func() {
 					deprecatedEvent := mockEvent()
 					deprecatedEvent.Message.ArgumentText = "start foo bar"
@@ -135,27 +136,52 @@ var _ = Describe("helper", func() {
 					Expect(command.Params).To(Equal([]string{"foo", "bar"}))
 				})
 			})
-		})
 
-		When("failed", func() {
 			When("there is no arguments provided", func() {
 				deprecatedEvent := getEventWithNoArguments()
 
-				It("returns empty command", func() {
+				It("returns list all command", func() {
 					requestBody, _ := json.Marshal(deprecatedEvent)
 					command, _ := ParseDeprecatedEvent(requestBody)
 
-					Expect(command).To(BeEquivalentTo(domain.EmptyCommand()))
+					Expect(command.ChatID).To(Equal("thread1"))
+					Expect(command.Name).To(Equal("available_commands"))
+					Expect(command.From).To(BeEquivalentTo(domain.User{
+						UserID: "users/1234567",
+						Name:   "Ryuichi Sakamoto",
+					}))
 				})
 
-				It("returns error", func() {
+				It("don't returns error", func() {
 					requestBody, _ := json.Marshal(deprecatedEvent)
 					_, err := ParseDeprecatedEvent(requestBody)
 
-					Expect(err).To(BeEquivalentTo(errors.New("no argument provided")))
+					Expect(err).NotTo(HaveOccurred())
 				})
 			})
 
+			When("fails to get the command name", func() {
+				deprecatedEvent := mockEvent()
+				deprecatedEvent.Message.ArgumentText = "blah"
+
+				It("returns list all command", func() {
+					requestBody, _ := json.Marshal(deprecatedEvent)
+					command, _ := ParseDeprecatedEvent(requestBody)
+
+					Expect(command.Name).To(Equal("available_commands"))
+				})
+
+				It("don't returns error", func() {
+					requestBody, _ := json.Marshal(deprecatedEvent)
+					_, err := ParseDeprecatedEvent(requestBody)
+
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+			})
+		})
+
+		When("failed", func() {
 			When("can't be unmarshaled to event", func() {
 				requestBody, _ := json.Marshal([]byte("something"))
 
@@ -171,21 +197,6 @@ var _ = Describe("helper", func() {
 					Expect(err).To(HaveOccurred())
 				})
 			})
-
-			When("fails to get the command name", func() {
-				deprecatedEvent := mockEvent()
-				deprecatedEvent.Message.ArgumentText = "blah"
-
-				It("return empty command and error", func() {
-					requestBody, _ := json.Marshal(deprecatedEvent)
-					command, err := ParseDeprecatedEvent(requestBody)
-
-					Expect(command).To(BeEquivalentTo(domain.EmptyCommand()))
-					Expect(err).To(HaveOccurred())
-				})
-
-			})
-
 		})
 	})
 })
