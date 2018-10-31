@@ -12,3 +12,6 @@ test:
 
 deploy: build
 	serverless deploy
+
+deploy-hangout: build
+	serverless deploy function -f hangout
